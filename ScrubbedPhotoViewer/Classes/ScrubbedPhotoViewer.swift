@@ -55,42 +55,42 @@ import UIKit
 	/**
 		Background color of image browser.
 	*/
-	@objc public var sCBackgroundColor: UIColor = UIColor.black {
+	@objc public var backgroundColor: UIColor = UIColor.black {
 		didSet {
-			self.view?.backgroundColor = sCBackgroundColor
+			self.view?.backgroundColor = backgroundColor
 		}
 	}
 
 	/**
 		Padding around the images
 	*/
-	@objc public var sCImagePadding: CGFloat = 20.0
+	@objc public var imagePadding: CGFloat = 20.0
 
 	/**
 		Width of the main image being displayed
 	*/
-	@objc public var sCImageWidth: CGFloat = 0.0
+	@objc public var imageWidth: CGFloat = 0.0
 
 	/**
 		Height of thumnmail strip (optional). The default is 100.
 	*/
-	@objc public var sCThumbnailStripHeight: CGFloat = 100.0
+	@objc public var thumbnailStripHeight: CGFloat = 100.0
 
 	/**
 		Position of the thumbnail strip
 	*/
-	@objc public var sCThumbnailStripPosition: ScrubThumbnailStripPosition = ScrubThumbnailStripPosition.bottom
+	@objc public var thumbnailStripPosition: ScrubThumbnailStripPosition = ScrubThumbnailStripPosition.bottom
 
 	/**
 		Starting image index. The default is 0 (first image).
 	*/
-	@objc public var sCStartIndex: Int = 0
+	@objc public var startIndex: Int = 0
 
 	/**
 		Internal Properties
 	*/
-	var scImageCollectionView: UICollectionView!
-	var scThumbnailCollectionView: UICollectionView!
+	var imageCollectionView: UICollectionView!
+	var thumbnailCollectionView: UICollectionView!
 
 	var mainContainer: UIView?
 	var currentPage: Int = 0
@@ -108,8 +108,8 @@ import UIKit
 	}
 
 	func initialize() {
-		sCImageWidth = view.bounds.size.width - 100
-		view.backgroundColor = sCBackgroundColor
+		imageWidth = view.bounds.size.width - 100
+		view.backgroundColor = backgroundColor
 	}
 
 	public override func viewWillAppear(_ animated: Bool) {
@@ -120,71 +120,74 @@ import UIKit
 	}
 
 	func setupMainCollection() {
-		var frame: CGRect
-		frame = view.bounds
+
 		// Image collection view
 		let layout = UICollectionViewFlowLayout()
 		layout.scrollDirection = .horizontal
 		layout.minimumInteritemSpacing = 0
-		layout.minimumLineSpacing = sCImagePadding
+		layout.minimumLineSpacing = imagePadding
 
 		//TODO: account for nav bar
-		frame.origin = CGPoint(x: 0, y: sCImagePadding)
+		var frame: CGRect = CGRect.zero
+		frame.origin = CGPoint(x: 0, y: imagePadding)
 		frame.size.width = view.frame.size.width
-		frame.size.height = view.frame.size.height - frame.origin.y - sCThumbnailStripHeight - sCImagePadding
+		frame.size.height = view.frame.size.height - frame.origin.y - thumbnailStripHeight - imagePadding
 
-		self.scImageCollectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
-		self.scImageCollectionView.showsHorizontalScrollIndicator = false
-		self.scImageCollectionView.delegate = self
-		self.scImageCollectionView.dataSource = self
-		self.scImageCollectionView.backgroundColor = sCBackgroundColor
-		self.scImageCollectionView.decelerationRate = UIScrollViewDecelerationRateFast
-		self.scImageCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
-		view.addSubview(self.scImageCollectionView)
+		self.imageCollectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
+		self.imageCollectionView.showsHorizontalScrollIndicator = false
+		self.imageCollectionView.delegate = self
+		self.imageCollectionView.dataSource = self
+		self.imageCollectionView.backgroundColor = backgroundColor
+		self.imageCollectionView.decelerationRate = UIScrollViewDecelerationRateFast
+		self.imageCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
+		view.addSubview(self.imageCollectionView)
 	}
 
 	func setupThumbnailCollection() {
+
 		// Thumbnail collection view
 		let bottomLayout = UICollectionViewFlowLayout()
 		bottomLayout.scrollDirection = .horizontal
 		bottomLayout.minimumInteritemSpacing = 0
-		bottomLayout.minimumLineSpacing = sCImagePadding
-		frame.origin = CGPoint(x: 0, y: self.scImageCollectionView.frame.size.height + self.scImageCollectionView.frame.origin.y + sCImagePadding)
+		bottomLayout.minimumLineSpacing = imagePadding
+
+		var frame: CGRect = CGRect.zero
+		frame.origin = CGPoint(x: 0, y: self.imageCollectionView.frame.size.height + self.imageCollectionView.frame.origin.y + imagePadding)
 		frame.size.width = view.frame.size.width
-		frame.size.height = sCThumbnailStripHeight - sCImagePadding
-		self.scThumbnailCollectionView = UICollectionView(frame: frame, collectionViewLayout: bottomLayout)
-		self.scThumbnailCollectionView.showsHorizontalScrollIndicator = false
-		self.scThumbnailCollectionView.allowsMultipleSelection = true
-		self.scThumbnailCollectionView.delegate = self
-		self.scThumbnailCollectionView.dataSource = self
-		self.scThumbnailCollectionView.backgroundColor = sCBackgroundColor
-		self.scThumbnailCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
-		view.addSubview(self.scThumbnailCollectionView)
+		frame.size.height = thumbnailStripHeight - imagePadding
+		self.thumbnailCollectionView = UICollectionView(frame: frame, collectionViewLayout: bottomLayout)
+		self.thumbnailCollectionView.showsHorizontalScrollIndicator = false
+		self.thumbnailCollectionView.allowsMultipleSelection = true
+		self.thumbnailCollectionView.delegate = self
+		self.thumbnailCollectionView.dataSource = self
+		self.thumbnailCollectionView.backgroundColor = self.backgroundColor
+		self.thumbnailCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
+		view.addSubview(self.thumbnailCollectionView)
 
 		// Reposition
-		switch self.sCThumbnailStripPosition {
+		switch self.thumbnailStripPosition {
 		case .top:
-			var frame: CGRect = self.scThumbnailCollectionView.frame
-			frame.origin.y = 32 + sCImagePadding * 2
-			self.scThumbnailCollectionView.frame = frame
-			frame = self.scImageCollectionView.frame
-			frame.origin.y = self.scThumbnailCollectionView.frame.size.height + self.scThumbnailCollectionView.frame.origin.y - sCImagePadding
-			self.scImageCollectionView.frame = frame
+			var frame: CGRect = self.thumbnailCollectionView.frame
+			frame.origin.y = 32 + imagePadding * 2
+			self.thumbnailCollectionView.frame = frame
+			frame = self.imageCollectionView.frame
+			frame.origin.y = self.thumbnailCollectionView.frame.size.height + self.thumbnailCollectionView.frame.origin.y - imagePadding
+			self.imageCollectionView.frame = frame
 		case .bottom:
 			break
 		default:
-			print("Strip position for \(sCThumbnailStripPosition)")
+			print("Strip position for \(thumbnailStripPosition)")
 		}
 	}
 
 	func loadCollections() {
 		// load collection views
-		self.scImageCollectionView.reloadData()
-		self.scThumbnailCollectionView.reloadData()
-		if self.sCStartIndex > 0 {
-			let indexPath = IndexPath(item: self.sCStartIndex, section: 0)
-			self.scThumbnailCollectionView.scrollToItem(at: indexPath, at: [], animated: true)
-			self.scImageCollectionView.scrollToItem(at: indexPath, at: [], animated: true)
+		self.imageCollectionView.reloadData()
+		self.thumbnailCollectionView.reloadData()
+		if self.startIndex > 0 {
+			let indexPath = IndexPath(item: self.startIndex, section: 0)
+			self.thumbnailCollectionView.scrollToItem(at: indexPath, at: [], animated: true)
+			self.imageCollectionView.scrollToItem(at: indexPath, at: [], animated: true)
 		}
 	}
 
@@ -207,13 +210,13 @@ extension ScrubbedPhotoViewer {
 
 	public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-		if (collectionView == scImageCollectionView) && (indexPath.item > 1) {
-			scThumbnailCollectionView.scrollToItem(at: IndexPath(item: indexPath.item - 1, section: 0), at: .centeredHorizontally, animated: true)
+		if collectionView == self.imageCollectionView && indexPath.item > 1 {
+			self.thumbnailCollectionView.scrollToItem(at: IndexPath(item: indexPath.item - 1, section: 0), at: .centeredHorizontally, animated: true)
 		}
 
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SCBottomCellIdentifer, for: indexPath) as! SCImageCell
 
-		self.imageDataSource?.populateData(at: indexPath.row, forCell: cell)
+		self.imageDataSource?.populateData(at: indexPath.item, forCell: cell)
 
 		return cell
 	}
@@ -221,7 +224,7 @@ extension ScrubbedPhotoViewer {
 	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: false)
 		currentPage = indexPath.item
-		scImageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+		self.imageCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
 	}
 }
 
@@ -229,20 +232,22 @@ extension ScrubbedPhotoViewer {
 extension ScrubbedPhotoViewer {
 
 	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		guard collectionView == scThumbnailCollectionView else {
-			return CGSize(width: sCImageWidth, height: collectionView.frame.size.height)
+		guard collectionView == thumbnailCollectionView else {
+			return CGSize(width: imageWidth, height: self.imageCollectionView.frame.size.height)
 		}
+
 		var size: CGSize = CGSize(width: 0, height: 0)
 		size.height = collectionView.frame.size.height
-		size.width = size.height * self.sCImageWidth / self.scImageCollectionView.frame.size.height
+		size.width = size.height * imageWidth / self.imageCollectionView.frame.size.height
+
 		return size
 	}
 
 	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-		if collectionView == scImageCollectionView {
-			return UIEdgeInsetsMake(0, (view.frame.size.width - sCImageWidth) / 2, 0, (view.frame.size.width - sCImageWidth) / 2)
+		if collectionView == self.imageCollectionView {
+			return UIEdgeInsetsMake(0, (view.frame.size.width - imageWidth) / 2, 0, (view.frame.size.width - imageWidth) / 2)
 		} else {
-			return UIEdgeInsetsMake(0, sCImagePadding, 0, sCImagePadding)
+			return UIEdgeInsetsMake(0, imagePadding, 0, imagePadding)
 		}
 	}
 }
@@ -250,15 +255,15 @@ extension ScrubbedPhotoViewer {
 //Mark: - UIScrollViewDelegate
 extension ScrubbedPhotoViewer {
 	public func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
-		guard scrollView == scImageCollectionView else { return }
+		guard scrollView == self.imageCollectionView else { return }
 		scrollView.isUserInteractionEnabled = false
 	}
 
 	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-		guard scrollView == scImageCollectionView else { return }
+		guard scrollView == self.imageCollectionView else { return }
 		guard !scrollView.isDecelerating else { return }
 
-		let item: Int = Int((scrollView.contentOffset.x - sCImageWidth / 2) / sCImageWidth) + 1
+		let item: Int = Int((scrollView.contentOffset.x - imageWidth / 2) / imageWidth) + 1
 
 		let lastItem: Int = (self.imageDataSource?.dataCount ?? 1) - 1
 
@@ -273,12 +278,13 @@ extension ScrubbedPhotoViewer {
 		} else if currentPage > lastItem {
 			currentPage = lastItem
 		}
-		self.scImageCollectionView?.scrollToItem(at: IndexPath(item: currentPage, section: 0), at: .centeredHorizontally, animated: true)
+
+		self.imageCollectionView?.scrollToItem(at: IndexPath(item: currentPage, section: 0), at: .centeredHorizontally, animated: true)
 	}
 
 	public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-		guard scrollView == scImageCollectionView else { return }
-		self.scImageCollectionView?.scrollToItem(at: IndexPath(item: currentPage, section: 0), at: .centeredHorizontally, animated: true)
+		guard scrollView == self.imageCollectionView else { return }
+		self.imageCollectionView?.scrollToItem(at: IndexPath(item: currentPage, section: 0), at: .centeredHorizontally, animated: true)
 		scrollView.isUserInteractionEnabled = true
 	}
 }
