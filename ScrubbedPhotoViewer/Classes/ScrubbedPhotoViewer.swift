@@ -13,15 +13,15 @@ import UIKit
 }
 
 @objc public protocol ScrubbedPhotoViewerDatasource: class {
-	var dataCount: Int { get }
-
+	func dataCount() -> Int
+	func updatedCurrentPhotoIndex(_ controller: ScrubbedPhotoViewer)
 	func populateData(at index: Int, forCell: SCImageCell)
 }
 
 /** Collection Cell For PhotoViewer. */
 @objc public class SCImageCell: UICollectionViewCell {
 
-	var sCImageView: UIImageView = UIImageView()
+	@objc public var imageView: UIImageView = UIImageView()
 
 	public override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -34,13 +34,13 @@ import UIKit
 	}
 
 	func addImage() {
-		self.sCImageView.frame = self.bounds
-		self.contentView.addSubview(self.sCImageView)
+		self.imageView.frame = self.bounds
+		self.contentView.addSubview(self.imageView)
 	}
 
 	public override func prepareForReuse() {
 		super.prepareForReuse()
-		self.sCImageView.image = nil
+		self.imageView.image = nil
 	}
 }
 
@@ -86,6 +86,12 @@ import UIKit
 	*/
 	@objc public var startIndex: Int = 0
 
+	@objc public private (set) var currentPage: Int = 0 {
+		didSet {
+			self.imageDataSource?.updatedCurrentPhotoIndex(self)
+		}
+	}
+
 	/**
 		Internal Properties
 	*/
@@ -93,7 +99,6 @@ import UIKit
 	var thumbnailCollectionView: UICollectionView!
 
 	var mainContainer: UIView?
-	var currentPage: Int = 0
 
 	let SCBottomCellIdentifer = "SCBottomCellIdentifer"
 
@@ -108,15 +113,26 @@ import UIKit
 	}
 
 	func initialize() {
-		imageWidth = view.bounds.size.width - 100
+		imageWidth = view.bounds.size.width
 		view.backgroundColor = backgroundColor
 	}
 
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+
 		self.setupMainCollection()
 		self.setupThumbnailCollection()
 		self.loadCollections()
+	}
+
+
+	public override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+
+		self.imageCollectionView.removeFromSuperview()
+		self.imageCollectionView = nil
+		self.thumbnailCollectionView.removeFromSuperview()
+		self.thumbnailCollectionView = nil
 	}
 
 	func setupMainCollection() {
@@ -137,6 +153,9 @@ import UIKit
 		self.imageCollectionView.showsHorizontalScrollIndicator = false
 		self.imageCollectionView.delegate = self
 		self.imageCollectionView.dataSource = self
+		if #available(iOS 10.0, *) {
+			self.imageCollectionView.prefetchDataSource = self
+		}
 		self.imageCollectionView.backgroundColor = backgroundColor
 		self.imageCollectionView.decelerationRate = UIScrollViewDecelerationRateFast
 		self.imageCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
@@ -160,6 +179,9 @@ import UIKit
 		self.thumbnailCollectionView.allowsMultipleSelection = true
 		self.thumbnailCollectionView.delegate = self
 		self.thumbnailCollectionView.dataSource = self
+		if #available(iOS 10.0, *) {
+			self.thumbnailCollectionView.prefetchDataSource = self
+		}
 		self.thumbnailCollectionView.backgroundColor = self.backgroundColor
 		self.thumbnailCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
 		view.addSubview(self.thumbnailCollectionView)
@@ -175,8 +197,6 @@ import UIKit
 			self.imageCollectionView.frame = frame
 		case .bottom:
 			break
-		default:
-			print("Strip position for \(thumbnailStripPosition)")
 		}
 	}
 
@@ -197,7 +217,7 @@ import UIKit
 extension ScrubbedPhotoViewer {
 
 	public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.imageDataSource?.dataCount ?? 0
+		return self.imageDataSource?.dataCount() ?? 0
 	}
 
 	public func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -265,7 +285,7 @@ extension ScrubbedPhotoViewer {
 
 		let item: Int = Int((scrollView.contentOffset.x - imageWidth / 2) / imageWidth) + 1
 
-		let lastItem: Int = (self.imageDataSource?.dataCount ?? 1) - 1
+		let lastItem: Int = (self.imageDataSource?.dataCount() ?? 1) - 1
 
 		if item > currentPage {
 			currentPage += 1
@@ -309,3 +329,23 @@ extension ScrubbedPhotoViewer {
 	}
 }
 
+
+@available (iOS 10.0, *)
+protocol ScrubbedPhotoViewerDatasourcePrefetch: ScrubbedPhotoViewerDatasource {
+	func prefetchData(for: ScrubbedPhotoViewer, at: [Int])
+	func cancelPrefetchData(for: ScrubbedPhotoViewer, at: [Int])
+}
+
+@available (iOS 10.0, *)
+extension ScrubbedPhotoViewer: UICollectionViewDataSourcePrefetching {
+
+	public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+		let rows = indexPaths.map { $0.item }
+		(self.imageDataSource as? ScrubbedPhotoViewerDatasourcePrefetch)?.prefetchData(for: self, at: rows)
+	}
+
+	public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+		let rows = indexPaths.map { $0.item }
+		(self.imageDataSource as? ScrubbedPhotoViewerDatasourcePrefetch)?.cancelPrefetchData(for: self, at: rows)
+	}
+}
