@@ -26,17 +26,10 @@ TODO: Add long description of the pod here.
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'sambhav7890' => 'sambhav.shah@practo.com' }
   s.source           = { :git => 'https://github.com/sambhav7890/ScrubbedPhotoViewer.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'ScrubbedPhotoViewer/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'ScrubbedPhotoViewer' => ['ScrubbedPhotoViewer/Assets/*.png']
-  # }
+  s.frameworks = 'UIKit'
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
 end

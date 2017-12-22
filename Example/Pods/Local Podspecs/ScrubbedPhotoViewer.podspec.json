@@ -1,0 +1,22 @@
+{
+  "name": "ScrubbedPhotoViewer",
+  "version": "0.1.0",
+  "summary": "A short description of ScrubbedPhotoViewer.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/sambhav7890/ScrubbedPhotoViewer",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "sambhav7890": "sambhav.shah@practo.com"
+  },
+  "source": {
+    "git": "https://github.com/sambhav7890/ScrubbedPhotoViewer.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "ScrubbedPhotoViewer/Classes/**/*"
+}

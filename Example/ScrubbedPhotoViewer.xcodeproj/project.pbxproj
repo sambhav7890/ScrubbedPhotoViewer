@@ -42,10 +42,10 @@
 		607FACE51AFB9204008FA782 /* ScrubbedPhotoViewer_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScrubbedPhotoViewer_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		6D34D5DB26EC1788F666AB09 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
-		AFEAC6781C9CC83AD8736007 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		6D34D5DB26EC1788F666AB09 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		AFEAC6781C9CC83AD8736007 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		C56106FA40460706626C2A47 /* Pods_ScrubbedPhotoViewer_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ScrubbedPhotoViewer_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CABDA9B2908CDA771D378B1B /* ScrubbedPhotoViewer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = ScrubbedPhotoViewer.podspec; path = ../ScrubbedPhotoViewer.podspec; sourceTree = "<group>"; };
+		CABDA9B2908CDA771D378B1B /* ScrubbedPhotoViewer.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ScrubbedPhotoViewer.podspec; path = ../ScrubbedPhotoViewer.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		D5F24E0A6C8FD75E4F88A476 /* Pods-ScrubbedPhotoViewer_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScrubbedPhotoViewer_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ScrubbedPhotoViewer_Example/Pods-ScrubbedPhotoViewer_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
