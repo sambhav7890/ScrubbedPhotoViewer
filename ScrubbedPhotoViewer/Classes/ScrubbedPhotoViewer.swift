@@ -114,6 +114,12 @@ import UIKit
 
 	public override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		self.setupMainCollection()
+		self.setupThumbnailCollection()
+		self.loadCollections()
+	}
+
+	func setupMainCollection() {
 		var frame: CGRect
 		frame = view.bounds
 		// Image collection view
@@ -135,6 +141,9 @@ import UIKit
 		self.scImageCollectionView.decelerationRate = UIScrollViewDecelerationRateFast
 		self.scImageCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
 		view.addSubview(self.scImageCollectionView)
+	}
+
+	func setupThumbnailCollection() {
 		// Thumbnail collection view
 		let bottomLayout = UICollectionViewFlowLayout()
 		bottomLayout.scrollDirection = .horizontal
@@ -151,6 +160,7 @@ import UIKit
 		self.scThumbnailCollectionView.backgroundColor = sCBackgroundColor
 		self.scThumbnailCollectionView.register(SCImageCell.self, forCellWithReuseIdentifier: SCBottomCellIdentifer)
 		view.addSubview(self.scThumbnailCollectionView)
+
 		// Reposition
 		switch self.sCThumbnailStripPosition {
 		case .top:
@@ -160,9 +170,14 @@ import UIKit
 			frame = self.scImageCollectionView.frame
 			frame.origin.y = self.scThumbnailCollectionView.frame.size.height + self.scThumbnailCollectionView.frame.origin.y - sCImagePadding
 			self.scImageCollectionView.frame = frame
+		case .bottom:
+			break
 		default:
-			print("TODO: strip position for \(sCThumbnailStripPosition)")
+			print("Strip position for \(sCThumbnailStripPosition)")
 		}
+	}
+
+	func loadCollections() {
 		// load collection views
 		self.scImageCollectionView.reloadData()
 		self.scThumbnailCollectionView.reloadData()
