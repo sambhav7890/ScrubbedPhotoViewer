@@ -16,7 +16,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  ScrubbedPhotoViewer: 53769b7dd5b1dce2994ba7fed10c5ca1efc45e2a
+  ScrubbedPhotoViewer: 7bc4fa74fe9e41ef44146e77247e180e0ddb2441
 
 PODFILE CHECKSUM: e32addebfbe9b257d62436caddf8e8cbbc6393d5
 
